@@ -8,13 +8,8 @@ public class Markov implements Walkable {
 
 	public static void main(String[] args) {
 		Markov m = new Markov();
-		m.parsePair("first", "30", 30);
-		// m.parsePair("first", "60", 60);
-		m.parsePair("30", "first", 1);
-		// m.parsePair("60", "first", 1);
-		// System.out.println(m.numUniqueAdds);
-		// System.out.println(m.allWords.containsKey("first"));
-		// System.out.println(m.allWords.containsKey("30"));
+		m.parsePair("first", "second", 1);
+		m.parsePair("second", "first", 1);
 		for (int i = 0; i < 1; i++) {
 			System.out.println(m.generateSentence(2));
 		}
