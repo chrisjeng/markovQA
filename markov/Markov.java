@@ -11,7 +11,7 @@ public class Markov implements Walkable {
 		m.parsePair("first", "second", 1);
 		m.parsePair("second", "first", 1);
 		for (int i = 0; i < 1; i++) {
-			System.out.println(m.generateSentence(2));
+			System.out.println(m.generateSentence(20));
 		}
 	}
 
@@ -130,7 +130,7 @@ public class Markov implements Walkable {
 			Word answer;
 			/* Branch based on if the edge exists or not. */
 			if (!str2edge.containsKey(word)) {
-				answer = new Word(word);
+				answer = getOrCreate(word);
 				str2edge.put(word, new Edge(this, answer, weight));
 				allWords.add(word);
 			} else {
