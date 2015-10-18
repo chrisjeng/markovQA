@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.io.File;
+import java.util.Scanner;
+import java.io.FileNotFoundException;
 
 public class Markov implements Walkable {
 
@@ -17,7 +19,20 @@ public class Markov implements Walkable {
 			String curr = args[i];
 			if ("-f".equals(curr) || "-file".equals(curr)) {
 				curr = args[++i];
+				if (i == args.length - 1) {
+					String alert = "WARNING: ";
+					alert += "You are going to parse this information, ";
+					alert += "and do nothing with it.";
+					System.out.println(alert);
+				}
 				m.parseDir(curr);
+			} else if ("-n".equals(curr) || "-num_words".equals(curr)) {
+				curr = args[++i];
+				int numWords = Integer.parseInt(curr);
+				String output = m.generateSentence(numWords);
+				System.out.println(output);
+			} else if ("-h".equals(curr) || "-help".equals(curr)) {
+				printHelpMessage();
 			} else {
 				printHelpMessage();
 			}
@@ -26,8 +41,10 @@ public class Markov implements Walkable {
 
 	private static void printHelpMessage() {
 		String helpMSG = "Usage: ";
-		helpMSG += "Markov [-f or -file]";
-		helpMSG += " [FILE_NAME or DIR_NAME]";
+		helpMSG += "Markov [-f or -file] ";
+		helpMSG += "[FILE_NAME or DIR_NAME] ";
+		helpMSG += "[-n or -num_words] ";
+		helpMSG += "[INTEGER_NUMBER]";
 		System.out.println(helpMSG);
 	}
 
@@ -53,8 +70,10 @@ public class Markov implements Walkable {
 			answer.append(" ");
 			Word next = w.randomWord();
 			if (next == null) {
-				System.out.println(w.val + " has no successors!");	
-				break;
+				System.out.println(w.val + " has no successors. Starting anew! ");
+				// Start another sentence.
+				answer.append(generateSentence(numWords - wordsSoFar - 1));
+				return answer;
 			}
 			w = next;
 		}
@@ -92,16 +111,31 @@ public class Markov implements Walkable {
 	}
 
 	public void parseFile(File f) {
-		// TODO
+		Scanner input;
+		try {
+			input = new Scanner(f);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			System.out.println("Done goofed!");
+			System.exit(1);
+			return;
+		}
+		if (!input.hasNext()) {
+			input.close();
+			return;
+		}
+		String start = input.next();
+		while(input.hasNext()) {
+		    String end = input.next();
+		    parsePair(start, end, 1);
+		    start = end;
+		}
+		input.close();
 	}
 	
 	/* Parses an entire directory. calls parseFile() on each file. */
 	public void parseDir(String dir_name) {
 		File folder = new File(dir_name);
-		if (!folder.isDirectory()) {
-			System.out.println("Not a directory!");
-			return;
-		}
 		parseRecursive(folder);
 	}
 
