@@ -3,16 +3,32 @@ import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.io.File;
 
 public class Markov implements Walkable {
 
 	public static void main(String[] args) {
-		Markov m = new Markov();
-		m.parsePair("first", "second", 1);
-		m.parsePair("second", "first", 1);
-		for (int i = 0; i < 1; i++) {
-			System.out.println(m.generateSentence(20));
+		if (args.length == 0) {
+			printHelpMessage();
+			return;
 		}
+		Markov m = new Markov();
+		for (int i = 0; i < args.length; i++) {
+			String curr = args[i];
+			if ("-f".equals(curr) || "-file".equals(curr)) {
+				curr = args[++i];
+				m.parseDir(curr);
+			} else {
+				printHelpMessage();
+			}
+		}
+	}
+
+	private static void printHelpMessage() {
+		String helpMSG = "Usage: ";
+		helpMSG += "Markov [-f or -file]";
+		helpMSG += " [FILE_NAME or DIR_NAME]";
+		System.out.println(helpMSG);
 	}
 
 	private HashMap<String, Word> allWords;
@@ -68,6 +84,36 @@ public class Markov implements Walkable {
 
 		startWord.addWord(end.toLowerCase(), weight);
 		numAdds++;
+	}
+
+	/* Parses a single file into the Markov Chain. */
+	public void parseFile(String file_name) {
+		// TODO
+	}
+
+	public void parseFile(File f) {
+		// TODO
+	}
+	
+	/* Parses an entire directory. calls parseFile() on each file. */
+	public void parseDir(String dir_name) {
+		File folder = new File(dir_name);
+		if (!folder.isDirectory()) {
+			System.out.println("Not a directory!");
+			return;
+		}
+		parseRecursive(folder);
+	}
+
+	private void parseRecursive(File f) {
+		if (f.isDirectory()) {
+			for (File curr : f.listFiles()) {
+				parseRecursive(curr);
+			}
+		}
+		if (f.isFile()) {
+			parseFile(f);
+		}
 	}
 
 	/* If exists, will get the Word, or if not, creates a new Word. */
