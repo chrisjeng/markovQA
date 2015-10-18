@@ -6,16 +6,31 @@ import java.util.Iterator;
 
 public class Markov implements Walkable {
 
+	public static void main(String[] args) {
+		Markov m = new Markov();
+		m.parsePair("first", "30", 30);
+		// m.parsePair("first", "60", 60);
+		m.parsePair("30", "first", 1);
+		// m.parsePair("60", "first", 1);
+		// System.out.println(m.numUniqueAdds);
+		// System.out.println(m.allWords.containsKey("first"));
+		// System.out.println(m.allWords.containsKey("30"));
+		for (int i = 0; i < 1; i++) {
+			System.out.println(m.generateSentence(2));
+		}
+	}
+
 	private HashMap<String, Word> allWords;
 	private int numAdds;
+	private int numUniqueAdds;
 
 	public Markov() {
 		allWords = new HashMap<String, Word>();
 		numAdds = 0;
 	}
 	
-	public StringBuilder generateSentence(int numWords) {
-		return generateSentence(numWords, getRandomWord());
+	public String generateSentence(int numWords) {
+		return generateSentence(numWords, getRandomWord()).toString();
 	}
 
 	public StringBuilder generateSentence(int numWords, String startWord) {
@@ -24,7 +39,13 @@ public class Markov implements Walkable {
 		int wordsSoFar;
 		for (wordsSoFar = 0; wordsSoFar < numWords; wordsSoFar++) {
 			answer.append(w.val);
-			w = w.randomWord();
+			answer.append(" ");
+			Word next = w.randomWord();
+			if (next == null) {
+				System.out.println(w.val + " has no successors!");	
+				break;
+			}
+			w = next;
 		}
 		return answer;
 	}
@@ -33,11 +54,37 @@ public class Markov implements Walkable {
 	public String getRandomWord() {
 		Iterator<String> myIt = allWords.keySet().iterator();
 		int randIndex = (int) (Math.random() * allWords.size());
+		if (!myIt.hasNext()) {
+			System.out.println("Error! Iterator issue!");
+		}
 		String currWord = myIt.next();
 		for (int i = 0; i < randIndex; i++) {
 			currWord = myIt.next();
 		}
 		return currWord;
+	}
+
+	/* Adds a mapping. The mapping does not have to be new. */
+	public void parsePair(String start, String end, double weight) {
+		start = start.toLowerCase();
+		Word startWord = getOrCreate(start.toLowerCase());
+		end = end.toLowerCase();
+		getOrCreate(end);
+
+		startWord.addWord(end.toLowerCase(), weight);
+		numAdds++;
+	}
+
+	/* If exists, will get the Word, or if not, creates a new Word. */
+	private Word getOrCreate(String input) {
+		if (allWords.containsKey(input)) {
+			return allWords.get(input);
+		} else {
+			Word answer = new Word(input);
+			allWords.put(input, answer);
+			numUniqueAdds++;
+			return answer;
+		}
 	}
 
 	/* Represents a single node in our graph. */
@@ -59,6 +106,9 @@ public class Markov implements Walkable {
 
 		/* Randomly selects an Edge based on weights and returns it. */
 		public Word randomWord() {
+			if (allWords.isEmpty()) {
+				return null;
+			}
 			if (!normalized) {
 				normalizeWeights();
 			}
@@ -77,12 +127,11 @@ public class Markov implements Walkable {
 			throw new RuntimeException("randomWord failed!");
 		}
 
-		/* Adds an edge and its weight. The edge may or may not already 
-		 * exist. Returns the given word. */
-		public Word addEdge(String word, double weight) {
+		/* Adds an edge and its weight. The edge doesn't have to be new. 
+		 * Returns the given word. */
+		public Word addWord(String word, double weight) {
 			/* Some houskeeping */
 			totalWeight += weight;
-			++numAdds;
 			Word answer;
 			/* Branch based on if the edge exists or not. */
 			if (!str2edge.containsKey(word)) {
@@ -127,5 +176,4 @@ public class Markov implements Walkable {
 			}
 		}
 	}
-
 }
