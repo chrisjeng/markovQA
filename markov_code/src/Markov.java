@@ -8,16 +8,28 @@ import java.util.Scanner;
 import java.io.FileNotFoundException;
 
 public class Markov implements Walkable {
-
 	public static void main(String[] args) {
 		if (args.length == 0) {
 			printHelpMessage();
 			return;
 		}
 		Markov m = new Markov();
+		double input_weight = 1.0;
 		for (int i = 0; i < args.length; i++) {
 			String curr = args[i];
-			if ("-f".equals(curr) || "-file".equals(curr)) {
+			if ("-w".equalsIgnoreCase(curr) || "-weight".equalsIgnoreCase(curr)) {
+				curr = args[++i];
+				if (curr.equalsIgnoreCase("read_mode")) {
+					m.isWeightEmbedded = true;
+				} else {
+					try {
+						input_weight = Double.parseDouble(curr);
+					} catch (NumberFormatException e) {
+						System.out.println("Please enter a valid weight value!");
+						return;
+					}
+				}
+			} else if ("-f".equalsIgnoreCase(curr) || "-file".equalsIgnoreCase(curr)) {
 				curr = args[++i];
 				if (i == args.length - 1) {
 					String alert = "WARNING: ";
@@ -25,16 +37,18 @@ public class Markov implements Walkable {
 					alert += "and do nothing with it.";
 					System.out.println(alert);
 				}
-				m.parse(curr);
-			} else if ("-n".equals(curr) || "-num_words".equals(curr)) {
+				m.parse(curr, input_weight);
+			} else if ("-n".equalsIgnoreCase(curr) || "-num_words".equalsIgnoreCase(curr)) {
 				curr = args[++i];
 				int numWords = Integer.parseInt(curr);
 				String output = m.genSentence(numWords);
 				System.out.println(output);
-			} else if ("-h".equals(curr) || "-help".equals(curr)) {
+			} else if ("-h".equalsIgnoreCase(curr) || "-help".equalsIgnoreCase(curr)) {
 				printHelpMessage();
+				return;
 			} else {
 				printHelpMessage();
+				return;
 			}
 		}
 		/* TODO: Read in from stdin and repeat repetitions. */
@@ -43,13 +57,14 @@ public class Markov implements Walkable {
 	/* Prints out the usage help message. */
 	private static void printHelpMessage() {
 		String helpMSG = "Usage: ";
-		helpMSG += "Markov [-f or -file] ";
-		helpMSG += "[FILE_NAME or DIR_NAME] ";
-		helpMSG += "[-n or -num_words] ";
-		helpMSG += "[INTEGER_NUMBER]";
+		helpMSG += "Markov ";
+		helpMSG += "[-w or -weight] [read_mode or DOUBLE_NUMBER]";
+		helpMSG += "[-f or -file] [FILE_NAME or DIR_NAME] ";
+		helpMSG += "[-n or -num_words] [INTEGER_NUMBER]";
 		System.out.println(helpMSG);
 	}
 
+	private boolean isWeightEmbedded = false;
 	private HashMap<String, Word> allWords;
 	private int numAdds;
 	private int numUniqueAdds;
@@ -307,6 +322,11 @@ public class Markov implements Walkable {
 			return;
 		}
 		String start = input.next();
+		if (isWeightEmbedded) {
+			/* Weight is embedded. Read that instead of taking the argument. */
+			weight = Double.parseDouble(start);
+			start = input.next();
+		}
 		while(input.hasNext()) {
 		    String end = input.next();
 		    parsePair(start, end, weight);
