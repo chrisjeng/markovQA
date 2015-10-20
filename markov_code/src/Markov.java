@@ -80,6 +80,17 @@ public class Markov implements Walkable {
 		return answer;
 	}
 
+	private boolean shouldCaps = true;
+	private String titleIfNecessary(String input) {
+		char last = input.charAt(input.length - 1);
+		if ()
+		if (shouldCaps) {
+
+		} else {
+			return input;
+		}
+	}
+
 	/* Returns a random word from this Markov chain. */
 	public String getRandomWord() {
 		Iterator<String> myIt = allWords.keySet().iterator();
