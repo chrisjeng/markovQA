@@ -25,11 +25,11 @@ public class Markov implements Walkable {
 					alert += "and do nothing with it.";
 					System.out.println(alert);
 				}
-				m.parseDir(curr);
+				m.parse(curr);
 			} else if ("-n".equals(curr) || "-num_words".equals(curr)) {
 				curr = args[++i];
 				int numWords = Integer.parseInt(curr);
-				String output = m.generateSentence(numWords);
+				String output = m.genSentence(numWords);
 				System.out.println(output);
 			} else if ("-h".equals(curr) || "-help".equals(curr)) {
 				printHelpMessage();
@@ -37,8 +37,10 @@ public class Markov implements Walkable {
 				printHelpMessage();
 			}
 		}
+		/* TODO: Read in from stdin and repeat repetitions. */
 	}
 
+	/* Prints out the usage help message. */
 	private static void printHelpMessage() {
 		String helpMSG = "Usage: ";
 		helpMSG += "Markov [-f or -file] ";
@@ -57,34 +59,61 @@ public class Markov implements Walkable {
 		numAdds = 0;
 	}
 	
-	public String generateSentence(int numWords) {
-		return generateSentence(numWords, getRandomWord()).toString();
+	/* Returns a random sentence of at least numWords words. Starts on a random
+	 * word. */
+	public String genSentence(int numWords) {
+		return genSentence(numWords, getRandomWord()).toString();
 	}
 
-	public StringBuilder generateSentence(int numWords, String startWord) {
-		StringBuilder answer = new StringBuilder();
-		Word w = allWords.get(startWord);
-		int wordsSoFar;
-		for (wordsSoFar = 0; wordsSoFar < numWords; wordsSoFar++) {
+	/* Maximum number of additional words before we force a punctuation. */
+	public static final int MAX_EX = 20;
 
+	/* Returns a random sentence of at least numWords words. Starts on 
+	 * starting_word. */
+	public StringBuilder genSentence(int numWords, String starting_word) {
+		starting_word = starting_word.toLowerCase();
+		if (!allWords.containsKey(starting_word)) {
+			System.out.println(starting_word + " is not a valid starting word!");
+			return null;
+		}
+		StringBuilder answer = new StringBuilder();
+		Word w = allWords.get(starting_word);
+		int cnt = 0;
+		int ex_words = 0;
+		while (w != null && cnt < numWords || !endsPunct(w.val) && ex_words++ < MAX_EX) {
 			answer.append(tidyWord(w.val));
 			answer.append(" ");
-			Word next = w.randomWord();
-			if (next == null) {
-				System.out.println(w.val + " has no successors. Starting anew! ");
-				// Start another sentence.
-				answer.append(generateSentence(numWords - wordsSoFar - 1));
-				return answer;
+			w = w.randomWord();
+			if (w == null) {
+				w = getFruitfulWord();
 			}
-			w = next;
-			// TODO: Paragraph splicing.
+			cnt++;
 		}
 		answer.replace(answer.length() - 1, answer.length(), ".");
 		return answer;
 	}
 
+	/* Determines the maximum number of tries before we quit on finding a 
+	 * fruitful word. */
+	public static final int MAX_TRIES = 5;
+
+	/* A word is "fruitful" if it has at least one edge to any other word. 
+	 * Will attempt to find a fruitful word MAX_TRIES number of times 
+	 * before giving up and return null. */
+	public Word getFruitfulWord() {
+		for (int i = 0; i < MAX_TRIES; i++) {
+			Word w = allWords.get(getRandomWord());
+			if (w.hasEdge()) {
+				return w;
+			}
+		}
+		return null;
+	}
+
 	private static HashSet<String> titleWords = new HashSet<String>();
 	private static HashSet<String> fullCapsWords = new HashSet<String>();
+
+	/* Handle all the capitalization stuff as necessary. */
 	private String tidyWord(String input) {
 
 		/* Initialize if necessary */
@@ -197,7 +226,6 @@ public class Markov implements Walkable {
 			fullCapsWords.add("WI");
 			fullCapsWords.add("MO");
 			fullCapsWords.add("WY");
-
 		}
 		String answer = titleIfNecessary(input);
 		if (titleWords.contains(input)) {
@@ -211,18 +239,28 @@ public class Markov implements Walkable {
 	}
 
 	private boolean shouldCaps = true;
+
+	/* Will capitalize the word if the previously outputted word ended in a 
+	 * punctuation. */
 	private String titleIfNecessary(String input) {
 		String answer;
-		char last = input.charAt(input.length() - 1);
 		if (shouldCaps) {
 			answer = titleCase(input);
 		} else {
 			answer = input;
 		}
-		shouldCaps = last == '.' || last == '?' || last == '!';
+		shouldCaps = endsPunct(input);
 		return answer;
 	}
 
+	/* Returns whether or not the input String ended in punctuation. */
+	private boolean endsPunct(String input) {
+		char last = input.charAt(input.length() - 1);
+		return last == '.' || last == '?' || last == '!';
+	}
+
+	/* Returns the title-case version of the input String (capitalizes the 
+	 * first character). */
 	private String titleCase(String input) {
 		String answer = "" + input.charAt(0);
 		answer = answer.toUpperCase();
@@ -254,12 +292,7 @@ public class Markov implements Walkable {
 		numAdds++;
 	}
 
-	/* Parses a single file into the Markov Chain. */
-	public void parseFile(String file_name) {
-		// TODO
-	}
-
-	public void parseFile(File f) {
+	private void parseFile(File f, double weight) {
 		Scanner input;
 		try {
 			input = new Scanner(f);
@@ -276,26 +309,32 @@ public class Markov implements Walkable {
 		String start = input.next();
 		while(input.hasNext()) {
 		    String end = input.next();
-		    parsePair(start, end, 1);
+		    parsePair(start, end, weight);
 		    start = end;
 		}
 		input.close();
 	}
-	
-	/* Parses an entire directory. calls parseFile() on each file. */
-	public void parseDir(String dir_name) {
-		File folder = new File(dir_name);
-		parseRecursive(folder);
+
+	public void parse(String path) {
+		parse(path, 1);
 	}
 
-	private void parseRecursive(File f) {
+	public void parse(String path, double weight) {
+		File folder = new File(path);
+		parseRecursive(folder, weight);
+	}
+
+	private void parseRecursive(File f, double weight) {
 		if (f.isDirectory()) {
 			for (File curr : f.listFiles()) {
-				parseRecursive(curr);
+				parseRecursive(curr, weight);
 			}
-		}
-		if (f.isFile()) {
-			parseFile(f);
+		} else if (f.isFile()) {
+			parseFile(f, weight);
+		} else {
+			String msg = "File " + f.getName() + " is neither a directory ";
+			msg += " or file!";
+			System.out.println(msg);
 		}
 	}
 
@@ -368,6 +407,10 @@ public class Markov implements Walkable {
 				existingEdge.orig_weight += weight;
 			}
 			return answer;
+		}
+
+		public boolean hasEdge() {
+			return !allWords.isEmpty();
 		}
 
 		/* Normalizes each Edge's norm_weight value. */
