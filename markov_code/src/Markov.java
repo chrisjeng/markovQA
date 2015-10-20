@@ -66,7 +66,8 @@ public class Markov implements Walkable {
 		Word w = allWords.get(startWord);
 		int wordsSoFar;
 		for (wordsSoFar = 0; wordsSoFar < numWords; wordsSoFar++) {
-			answer.append(w.val);
+
+			answer.append(tidyWord(w.val));
 			answer.append(" ");
 			Word next = w.randomWord();
 			if (next == null) {
@@ -76,19 +77,156 @@ public class Markov implements Walkable {
 				return answer;
 			}
 			w = next;
+			// TODO: Paragraph splicing.
+		}
+		answer.replace(answer.length() - 1, answer.length(), ".");
+		return answer;
+	}
+
+	private static HashSet<String> titleWords = new HashSet<String>();
+	private static HashSet<String> fullCapsWords = new HashSet<String>();
+	private String tidyWord(String input) {
+
+		/* Initialize if necessary */
+		if (titleWords.isEmpty()) {
+			// TODO: Export to a .txt file
+			titleWords.add("i");
+			titleWords.add("obama");
+			titleWords.add("barack");
+			titleWords.add("iraq");
+			titleWords.add("america");
+			titleWords.add("barack");
+			titleWords.add("mrs.");
+			titleWords.add("mr.");
+			titleWords.add("chicago");
+			titleWords.add("woodrow");
+			titleWords.add("wilson");
+			titleWords.add("alabama");
+			titleWords.add("montana");
+			titleWords.add("alaska");
+			titleWords.add("nebraska");
+			titleWords.add("arizona");
+			titleWords.add("nevada");
+			titleWords.add("arkansas");
+			titleWords.add("california");
+			titleWords.add("colorado");
+			titleWords.add("mexico");
+			titleWords.add("connecticut");
+			titleWords.add("delaware");
+			titleWords.add("florida");
+			titleWords.add("georgia");
+			titleWords.add("ohio");
+			titleWords.add("hawaii");
+			titleWords.add("oklahoma");
+			titleWords.add("idaho");
+			titleWords.add("oregon");
+			titleWords.add("illinois");
+			titleWords.add("pennsylvania");
+			titleWords.add("indiana");
+			titleWords.add("rhode");
+			titleWords.add("iowa");
+			titleWords.add("kansas");
+			titleWords.add("kentucky");
+			titleWords.add("tennessee");
+			titleWords.add("louisiana");
+			titleWords.add("texas");
+			titleWords.add("maine");
+			titleWords.add("utah");
+			titleWords.add("maryland");
+			titleWords.add("vermont");
+			titleWords.add("massachusetts");
+			titleWords.add("virginia");
+			titleWords.add("michigan");
+			titleWords.add("washington");
+			titleWords.add("minnesota");
+			titleWords.add("mississippi");
+			titleWords.add("wisconsin");
+			titleWords.add("missouri");
+			titleWords.add("wyoming");
+
+
+			fullCapsWords.add("u.s.");
+			fullCapsWords.add("USA");
+			fullCapsWords.add("AL");
+			fullCapsWords.add("MT");
+			fullCapsWords.add("AK");
+			fullCapsWords.add("NE");
+			fullCapsWords.add("AZ");
+			fullCapsWords.add("NV");
+			fullCapsWords.add("AR");
+			fullCapsWords.add("NH");
+			fullCapsWords.add("CA");
+			fullCapsWords.add("NJ");
+			fullCapsWords.add("CO");
+			fullCapsWords.add("NM");
+			fullCapsWords.add("CT");
+			fullCapsWords.add("NY");
+			fullCapsWords.add("DE");
+			fullCapsWords.add("NC");
+			fullCapsWords.add("FL");
+			fullCapsWords.add("ND");
+			fullCapsWords.add("GA");
+			fullCapsWords.add("OH");
+			fullCapsWords.add("HI");
+			fullCapsWords.add("OK");
+			fullCapsWords.add("ID");
+			fullCapsWords.add("OR");
+			fullCapsWords.add("IL");
+			fullCapsWords.add("PA");
+			fullCapsWords.add("IN");
+			fullCapsWords.add("RI");
+			fullCapsWords.add("IA");
+			fullCapsWords.add("SC");
+			fullCapsWords.add("KS");
+			fullCapsWords.add("SD");
+			fullCapsWords.add("KY");
+			fullCapsWords.add("TN");
+			fullCapsWords.add("LA");
+			fullCapsWords.add("TX");
+			fullCapsWords.add("ME");
+			fullCapsWords.add("UT");
+			fullCapsWords.add("MD");
+			fullCapsWords.add("VT");
+			fullCapsWords.add("MA");
+			fullCapsWords.add("VA");
+			fullCapsWords.add("MI");
+			fullCapsWords.add("WA");
+			fullCapsWords.add("MN");
+			fullCapsWords.add("WV");
+			fullCapsWords.add("MS");
+			fullCapsWords.add("WI");
+			fullCapsWords.add("MO");
+			fullCapsWords.add("WY");
+
+		}
+		String answer = titleIfNecessary(input);
+		if (titleWords.contains(input)) {
+			shouldCaps = false;
+			return titleCase(input);
+		}
+		if (fullCapsWords.contains(input)) {
+			return input.toUpperCase();
 		}
 		return answer;
 	}
 
 	private boolean shouldCaps = true;
 	private String titleIfNecessary(String input) {
-		char last = input.charAt(input.length - 1);
-		if ()
+		String answer;
+		char last = input.charAt(input.length() - 1);
 		if (shouldCaps) {
-
+			answer = titleCase(input);
 		} else {
-			return input;
+			answer = input;
 		}
+		shouldCaps = last == '.' || last == '?' || last == '!';
+		return answer;
+	}
+
+	private String titleCase(String input) {
+		String answer = "" + input.charAt(0);
+		answer = answer.toUpperCase();
+		return answer + input.substring(1);
 	}
 
 	/* Returns a random word from this Markov chain. */
