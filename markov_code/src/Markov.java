@@ -43,7 +43,8 @@ public class Markov implements Walkable {
 				int numWords = Integer.parseInt(curr);
 				String output = m.genSentence(numWords);
 				System.out.println(output);
-			} else if ("-h".equalsIgnoreCase(curr) || "-help".equalsIgnoreCase(curr)) {
+			} else if ("-h".equalsIgnoreCase(curr) || "-help".equalsIgnoreCase(curr) ||
+													 "--help".equalsIgnoreCase(curr)) {
 				printHelpMessage();
 				return;
 			} else {
@@ -57,10 +58,10 @@ public class Markov implements Walkable {
 	/* Prints out the usage help message. */
 	private static void printHelpMessage() {
 		String helpMSG = "Usage: ";
-		helpMSG += "Markov ";
-		helpMSG += "[-w or -weight] [read_mode or DOUBLE_NUMBER]";
-		helpMSG += "[-f or -file] [FILE_NAME or DIR_NAME] ";
-		helpMSG += "[-n or -num_words] [INTEGER_NUMBER]";
+		helpMSG += "Markov ...\n";
+		helpMSG += "(optional) [-w or -weight] [read_mode or DOUBLE_NUMBER]\n";
+		helpMSG += "(required) [-f or -file] [FILE_NAME or DIR_NAME]\n";
+		helpMSG += "(recommended) [-n or -num_words] [INTEGER_NUMBER]";
 		System.out.println(helpMSG);
 	}
 
@@ -324,7 +325,12 @@ public class Markov implements Walkable {
 		String start = input.next();
 		if (isWeightEmbedded) {
 			/* Weight is embedded. Read that instead of taking the argument. */
-			weight = Double.parseDouble(start);
+			try {
+				weight = Double.parseDouble(start);
+			} catch (NumberFormatException e) {
+				System.out.println("Error reading weight from " + f.getName());
+				System.exit(1);
+			}
 			start = input.next();
 		}
 		while(input.hasNext()) {
