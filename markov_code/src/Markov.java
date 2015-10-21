@@ -81,12 +81,12 @@ public class Markov implements Walkable {
 		return genSentence(numWords, getRandomWord()).toString();
 	}
 
-	/* Maximum number of additional words before we force a punctuation. */
-	public static final int MAX_EX = 20;
 
 	/* Returns a random sentence of at least numWords words. Starts on 
 	 * starting_word. */
 	public StringBuilder genSentence(int numWords, String starting_word) {
+		/* Maximum number of additional words before we force a punctuation. */
+		int MAX_EX = numWords / 2; // Up to an additional 50% length for punctuation-searching purposes.
 		starting_word = starting_word.toLowerCase();
 		if (!allWords.containsKey(starting_word)) {
 			System.out.println(starting_word + " is not a valid starting word!");
