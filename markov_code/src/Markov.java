@@ -116,6 +116,7 @@ public class Markov implements Walkable {
 				if (answer.length() > twitterNumChar) {
 					/* Attempt to stop on the next punctuation. */
 					if (endsPunct(w.val)) {
+						answer.append(w.val);
 						return answer;
 					}
 				} else if (answer.length() + w.val.length() > 140) {
@@ -126,6 +127,7 @@ public class Markov implements Walkable {
 					} else {
 						/* Force a period. */
 						answer.replace(answer.length() - 1, answer.length(), ".");
+						return answer;
 					}
 				}
 			}
