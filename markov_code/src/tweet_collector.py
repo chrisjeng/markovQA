@@ -7,10 +7,11 @@ import re
 import os
 import argparse
 
+consumer_key = "2UiujM3WG929c4svJ1iVrEkWe"
 access_token = "3166227044-nO5qPuJCuGeNLLQKeJ2Rg8XX0a0svxB4jccyxwL"
-access_token_secret = settings['access_token_secret']
-consumer_key = "rR3XLOtoOXnCEFdrnUhwVM7hA"
+
 consumer_secret = settings['consumer_secret']
+access_token_secret = settings['access_token_secret']
 
 TWEET_NUM = 1000
 
