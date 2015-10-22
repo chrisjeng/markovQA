@@ -43,6 +43,9 @@ public class Markov implements Walkable {
 				int numWords = Integer.parseInt(curr);
 				String output = m.genSentence(numWords);
 				System.out.println(output);
+			} else if ("-t".equalsIgnoreCase(curr) || "-twitter".equalsIgnoreCase(curr)) {
+				m.twitterMode = true;
+				m.twitterNumChar = (int) (Math.random() * 90 + 10);
 			} else if ("-h".equalsIgnoreCase(curr) || "-help".equalsIgnoreCase(curr) ||
 													 "--help".equalsIgnoreCase(curr)) {
 				printHelpMessage();
@@ -61,7 +64,8 @@ public class Markov implements Walkable {
 		helpMSG += "Markov ...\n";
 		helpMSG += "(optional) [-w or -weight] [read_mode or DOUBLE_NUMBER]\n";
 		helpMSG += "(required) [-f or -file] [FILE_NAME or DIR_NAME]\n";
-		helpMSG += "(recommended) [-n or -num_words] [INTEGER_NUMBER]";
+		helpMSG += "(recommended) [-n or -num_words] [INTEGER_NUMBER]\n";
+		helpMSG += "(do NOT use with -n!) [-t or -twitter] ";
 		System.out.println(helpMSG);
 	}
 
@@ -69,6 +73,8 @@ public class Markov implements Walkable {
 	private HashMap<String, Word> allWords;
 	private int numAdds;
 	private int numUniqueAdds;
+	private boolean twitterMode = false; /* Goes into Twitter mode, aiming for 10-140 characters. */
+	private int twitterNumChar;
 
 	public Markov() {
 		allWords = new HashMap<String, Word>();
@@ -104,6 +110,23 @@ public class Markov implements Walkable {
 				w = getFruitfulWord();
 			}
 			cnt++;
+			if (twitterMode) {
+				if (answer.length() > twitterNumChar) {
+					/* Attempt to stop on the next punctuation. */
+					if (endsPunct(w.val)) {
+						return answer;
+					}
+				} else if (answer.length() + w.val.length() > 140) {
+					/* Hard stop. */
+					if (endsPunct(answer.toString())) {
+						/* Ends in punctuation. Cool. */
+						return answer;
+					} else {
+						/* Force a period. */
+						answer.replace(answer.length() - 1, answer.length(), ".");
+					}
+				}
+			}
 		}
 		answer.replace(answer.length() - 1, answer.length(), ".");
 		return answer;
