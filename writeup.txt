@@ -1,7 +1,10 @@
 Introduction:
-Our project is Relationship Guru. Tell the bot about any relationship problems/questions you may have, and it will immediately scrape relevant Reddit posts to educate itself, and give you a sophisticated answer to your problems! We essentially have a Markov chain, weighted by relevance and upvotes (the more relevant the post is, and the more upvotes it has, the more important the data is). In addition to giving relationship advice, the bot has additional features like Obama 
+
+Our project is Relationship Guru. Tell the bot about any relationship problems/questions you may have, and it will immediately scrape relevant Reddit posts to educate itself, and give you a sophisticated answer to your problems! We essentially have a Markov chain, weighted by relevance and upvotes (the more relevant the post is, and the more upvotes it has, the more important the data is). In addition to giving relationship advice, the bot has additional features like Obama speech generation (make Obama), Trump twitter generation (-t flag), and also non-serious mode (weight down-voted answers more heavily). 
 
 Methods:
+
+The heart of the sentence generation is the Markov chain. When given sample answer data, each pair of words is parsed and connected in an internal Markov chain. Each file is given a fixed weight, so that all pairings of words from the file have that weighting. Weightings are cumulative, and normalized after all file processing has occured (and we are generating sentences). 
 
 Experiments:
 Reddit limits our scraping to a declared 1 request every 2 seconds, but is realistically more along the lines of 1 request every 8 seconds. We had to morph the Python scraping to be more acceptable, to avoid the dreaded "Too many requests" error. 
