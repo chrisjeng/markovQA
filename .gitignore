@@ -1,3 +1,11 @@
 # Java
 *.class
 venv
+
+# Macbook silliness
+*.swp
+.DS_STORE
+
+# Output data
+reddit_posts
+scripts

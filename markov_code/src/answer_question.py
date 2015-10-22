@@ -31,11 +31,10 @@ def make_HTTP_request(url):
     return html
 
 
-def reddit_search(query_string):
+def reddit_search(query_string, search_url='https://reddit.com/search?q={0}'):
     # Split up the query string in a plus-delimited query used in search
     plus_delimited_query = '+'.join(query_string.split())
-    html = make_HTTP_request(
-        'https://reddit.com/search?q={0}'.format(plus_delimited_query))
+    html = make_HTTP_request(search_url.format(plus_delimited_query))
 
     # Find the div corresponding to top posts and process each post
     soup = BeautifulSoup(html) 
@@ -110,9 +109,16 @@ def output_results_to_file(post_results):
 
 
 def main():
+    print("Hi, my name is AnswerBot9001!")
+    relationship = raw_input("Would you like relationship advice? (y/N)\n")
+    serious = raw_input("Do you want a serious answer? (y/N)\n") == 'y'
     query_string = raw_input("Please enter a question and "
                              "we will attempt to answer :D\n")
-    post_results = reddit_search(query_string)     
+    if relationship == 'y':
+        post_results = reddit_search(query_string,
+            search_url='https://www.reddit.com/r/relationships/search?q={0}')
+    else:
+        post_results = reddit_search(query_string)
     output_results_to_file(post_results)
         
 
