@@ -22,11 +22,11 @@ if __name__ == '__main__':
     # user = api.get_user('realDonaldTrump')
     auth = OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_token_secret)
+    api = tweepy.API(auth)
 
     if args.username:
         user_name = args.username
     else:
-        api = tweepy.API(auth)
         while True:
             user = raw_input("Whose tweet would you like to generate?\n")
             search_result = api.search_users(user)
