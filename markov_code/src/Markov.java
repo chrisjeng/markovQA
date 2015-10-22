@@ -116,9 +116,15 @@ public class Markov implements Walkable {
 					if (endsPunct(w.val)) {
 						return answer;
 					}
-				} else if (answer.length() > 140) {
+				} else if (answer.length() + w.val.length() > 140) {
 					/* Hard stop. */
-					return new StringBuilder(answer.substring(0, 140));
+					if (endsPunct(answer.toString())) {
+						/* Ends in punctuation. Cool. */
+						return answer;
+					} else {
+						/* Force a period. */
+						answer.replace(answer.length() - 1, answer.length(), ".");
+					}
 				}
 			}
 		}
