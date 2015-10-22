@@ -1,6 +1,9 @@
 # Java
 *.class
 
+# Python
+*.pyc
+
 # Macbook silliness
 *.swp
 .DS_STORE
@@ -8,6 +11,7 @@
 # Output data
 reddit_posts
 scripts
+*_tweets
 
 # Secret token and key for Twitter
 config.py*
