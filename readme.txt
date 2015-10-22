@@ -3,7 +3,12 @@ Chris Jeng
 Don Han
 Giulio Zhou
 
-How to run the code:
+HOW TO RUN THE CODE:
+%%%%%%%%%%%%%%%%%%%%%%%%%%% Option 1: Makefile %%%%%%%%%%%%%%%%%%%%%%%%%%%
+1. Run the Makefile by calling "make", followed by "make ask". Respond with
+   whether or not you would like relationship advice (highly recommended) and
+   if you'd like a series response.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% Option 2: Python %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 1. Run the python file as follows, where the weights flag tells the 
    program to output each comment's weight at the top of its file.
    >>> python answer_question.py --weights
