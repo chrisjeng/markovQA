@@ -1,5 +1,12 @@
 Introduction:
+Our project is Relationship Guru. Tell the bot about any relationship problems/questions you may have, and it will immediately scrape relevant Reddit posts to educate itself, and give you a sophisticated answer to your problems! We essentially have a Markov chain, weighted by relevance and upvotes (the more relevant the post is, and the more upvotes it has, the more important the data is). In addition to giving relationship advice, the bot has additional features like Obama 
+
 Methods:
+
 Experiments:
+Reddit limits our scraping to a declared 1 request every 2 seconds, but is realistically more along the lines of 1 request every 8 seconds. We had to morph the Python scraping to be more acceptable, to avoid the dreaded "Too many requests" error. 
 Results/Analysis:
 Discussion/Limitations:
+Initially, we wanted to scrape Quora and apply PageRank on the user-upvote network to get a reasonable weight for our data. For example, users with many followers and highly upvoted answers would receive high weight scores, and recursively, if those followers are themselves important, the weighting score goes up even more. However, Quora is difficult to scrape with our Python BeautifulSoup code because Quora requires authentication to view the posts (boo!). We instead decided to scrape Reddit, because the html of the site wasn't too difficult to parse, and the data would be more comical in nature. 
+
+Another major feature we didn't explore was NLP. Currently, our Markov chain runs blindly off of the data, and there is no grammatical thinking or sentence structure correction. Punctuation can also be unnatural. Our answers would make more sense if we applied NLP to the output, but we never explored doing so because that's beyond the scope of a short project. 
