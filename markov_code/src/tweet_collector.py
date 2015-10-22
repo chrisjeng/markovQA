@@ -43,18 +43,15 @@ if __name__ == '__main__':
         os.remove(filename)
     with open(filename, "a") as f:
         print("Start processing " + str(TWEET_NUM) + " tweets")
-        try:
-            for tweet in tweepy.Cursor(api.user_timeline, id=user_name).items(TWEET_NUM):
-                tweet_text = tweet.text
-                # do not count retweets
-                if "RT @" not in tweet_text:
-                    # removes hyperlinks or Twitter mentions
-                    tweet_text = re.sub(r"(?:\@|https?\://)\S+", "", tweet_text)
-                    tweet_text = re.sub("&amp;", "&", tweet_text)
-                    to_file = tweet_text.encode('utf-8') + '\n'
-                    f.write(to_file)
-        except tweepy.error.TweepError:
-            print("The user doesn't exist. Trying to get the closest Twitter account")
+        for tweet in tweepy.Cursor(api.user_timeline, id=user_name).items(TWEET_NUM):
+            tweet_text = tweet.text
+            # do not count retweets
+            if "RT @" not in tweet_text:
+                # removes hyperlinks or Twitter mentions
+                tweet_text = re.sub(r"(?:\@|https?\://)\S+", "", tweet_text)
+                tweet_text = re.sub("&amp;", "&", tweet_text)
+                to_file = tweet_text.encode('utf-8') + '\n'
+                f.write(to_file)
 
 
     print("DONE")
