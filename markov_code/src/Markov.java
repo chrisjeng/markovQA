@@ -45,6 +45,7 @@ public class Markov implements Walkable {
 				System.out.println(output);
 			} else if ("-t".equalsIgnoreCase(curr) || "-twitter".equalsIgnoreCase(curr)) {
 				m.twitterMode = true;
+				m.twitterNumChar = (int) (Math.random() * 90 + 10);
 			} else if ("-h".equalsIgnoreCase(curr) || "-help".equalsIgnoreCase(curr) ||
 													 "--help".equalsIgnoreCase(curr)) {
 				printHelpMessage();
@@ -73,6 +74,7 @@ public class Markov implements Walkable {
 	private int numAdds;
 	private int numUniqueAdds;
 	private boolean twitterMode = false; /* Goes into Twitter mode, aiming for 10-140 characters. */
+	private int twitterNumChar;
 
 	public Markov() {
 		allWords = new HashMap<String, Word>();
@@ -109,7 +111,7 @@ public class Markov implements Walkable {
 			}
 			cnt++;
 			if (twitterMode) {
-				if (answer.length() > 40) {
+				if (answer.length() > twitterNumChar) {
 					/* Attempt to stop on the next punctuation. */
 					if (endsPunct(w.val)) {
 						return answer;
