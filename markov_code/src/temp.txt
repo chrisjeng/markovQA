@@ -1,0 +1,5 @@
+Usage: Markov ...
+(optional) [-w or -weight] [read_mode or DOUBLE_NUMBER]
+(required) [-f or -file] [FILE_NAME or DIR_NAME]
+(recommended) [-n or -num_words] [INTEGER_NUMBER]
+(do NOT use with -n!) [-t or -twitter] 
