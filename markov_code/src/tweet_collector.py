@@ -50,6 +50,7 @@ if __name__ == '__main__':
                 if "RT @" not in tweet_text:
                     # removes hyperlinks or Twitter mentions
                     tweet_text = re.sub(r"(?:\@|https?\://)\S+", "", tweet_text)
+                    tweet_text = re.sub("&amp;", "&", tweet_text)
                     to_file = tweet_text.encode('utf-8') + '\n'
                     f.write(to_file)
         except tweepy.error.TweepError:
