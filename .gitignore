@@ -1,6 +1,5 @@
 # Java
 *.class
-venv
 
 # Macbook silliness
 *.swp
@@ -9,3 +8,9 @@ venv
 # Output data
 reddit_posts
 scripts
+
+# Secret token and key for Twitter
+config.py*
+
+# Virtual Environment
+venv
