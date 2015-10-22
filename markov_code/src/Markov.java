@@ -46,6 +46,8 @@ public class Markov implements Walkable {
 			} else if ("-t".equalsIgnoreCase(curr) || "-twitter".equalsIgnoreCase(curr)) {
 				m.twitterMode = true;
 				m.twitterNumChar = (int) (Math.random() * 90 + 10);
+				String output = m.genSentence(140);
+				System.out.println(output);
 			} else if ("-h".equalsIgnoreCase(curr) || "-help".equalsIgnoreCase(curr) ||
 													 "--help".equalsIgnoreCase(curr)) {
 				printHelpMessage();
@@ -102,7 +104,7 @@ public class Markov implements Walkable {
 		Word w = allWords.get(starting_word);
 		int cnt = 0;
 		int ex_words = 0;
-		while (w != null && cnt < numWords || !endsPunct(w.val) && ex_words++ < MAX_EX) {
+		while (twitterMode || w != null && cnt < numWords || !endsPunct(w.val) && ex_words++ < MAX_EX) {
 			answer.append(tidyWord(w.val));
 			answer.append(" ");
 			w = w.randomWord();
