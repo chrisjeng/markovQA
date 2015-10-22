@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.io.File;
 import java.util.Scanner;
 import java.io.FileNotFoundException;
+import java.util.NoSuchElementException;
 
 public class Markov implements Walkable {
 	public static void main(String[] args) {
@@ -41,13 +42,11 @@ public class Markov implements Walkable {
 			} else if ("-n".equalsIgnoreCase(curr) || "-num_words".equalsIgnoreCase(curr)) {
 				curr = args[++i];
 				int numWords = Integer.parseInt(curr);
-				String output = m.genSentence(numWords);
-				System.out.println(output);
+				m.promptRepeat(numWords);
 			} else if ("-t".equalsIgnoreCase(curr) || "-twitter".equalsIgnoreCase(curr)) {
 				m.twitterMode = true;
 				m.twitterNumChar = (int) (Math.random() * 90 + 10);
-				String output = m.genSentence(140);
-				System.out.println(output);
+				m.promptRepeat(140);
 			} else if ("-h".equalsIgnoreCase(curr) || "-help".equalsIgnoreCase(curr) ||
 													 "--help".equalsIgnoreCase(curr)) {
 				printHelpMessage();
@@ -58,6 +57,20 @@ public class Markov implements Walkable {
 			}
 		}
 		/* TODO: Read in from stdin and repeat repetitions. */
+	}
+
+	/* Prompts the user if they want to generate another output with the same 
+	 * settings. They respond using stdin. */
+	private void promptRepeat(int num) {
+		Scanner s = new Scanner(System.in);
+		String answer = "y";
+		while ("y".equalsIgnoreCase(answer)) {
+			String output = genSentence(num);
+			System.out.println(output);
+			System.out.print("\nGenerate another one? [y/N] ");
+			answer = s.next();
+		}
+		s.close();
 	}
 
 	/* Prints out the usage help message. */
