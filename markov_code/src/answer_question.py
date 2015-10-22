@@ -31,7 +31,8 @@ def make_HTTP_request(url):
     return html
 
 
-def reddit_search(query_string, search_url='https://reddit.com/search?q={0}'):
+def reddit_search(query_string, search_url='https://reddit.com/search?q={0}',
+                  serious=True):
     # Split up the query string in a plus-delimited query used in search
     plus_delimited_query = '+'.join(query_string.split())
     html = make_HTTP_request(search_url.format(plus_delimited_query))
@@ -56,7 +57,7 @@ def reddit_search(query_string, search_url='https://reddit.com/search?q={0}'):
 
         header = post.find('header')
         post_link = header.find('a', href=True)
-        processed_post = process_post(post_link['href'])
+        processed_post = process_post(post_link['href'], serious)
         print("({0} posts completed/{1} total posts)".format(i + 1,
             min(MAX_NUM_POSTS, len(list_of_posts))))
         if processed_post == None:
@@ -66,7 +67,9 @@ def reddit_search(query_string, search_url='https://reddit.com/search?q={0}'):
     return post_results
 
 
-def process_post(post_link):
+def process_post(post_link, serious=True):
+    global MAX_NUM_COMMENTS
+
     html = make_HTTP_request(post_link)
     soup = BeautifulSoup(html)
     comment_area = soup.find('div', {'class': 'commentarea'})
@@ -76,6 +79,11 @@ def process_post(post_link):
     table_contents = comment_area.find('div', {'class': 'sitetable'})
     list_of_comments = table_contents.findAll('div', {'class': 'comment'},
                                               recursive=False)
+    # Reverse the list and increase number of comments examined if non-serious
+    if not serious:
+        MAX_NUM_COMMENTS = 10
+        list_of_comments = list_of_comments[::-1]
+
     top_comments = []
     for i in range(min(MAX_NUM_COMMENTS, len(list_of_comments))):
         comment = list_of_comments[i]
@@ -111,14 +119,15 @@ def output_results_to_file(post_results):
 def main():
     print("Hi, my name is AnswerBot9001!")
     relationship = raw_input("Would you like relationship advice? (y/N)\n")
-    serious = raw_input("Do you want a serious answer? (y/N)\n") == 'y'
+    seriousness = raw_input("Do you want a serious answer? (y/N)\n") == 'y'
     query_string = raw_input("Please enter a question and "
                              "we will attempt to answer :D\n")
     if relationship == 'y':
         post_results = reddit_search(query_string,
-            search_url='https://www.reddit.com/r/relationships/search?q={0}')
+            search_url='https://www.reddit.com/r/relationships/search?q={0}',
+            serious=seriousness)
     else:
-        post_results = reddit_search(query_string)
+        post_results = reddit_search(query_string, serious=seriousness)
     output_results_to_file(post_results)
         
 
