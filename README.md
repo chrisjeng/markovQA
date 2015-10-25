@@ -11,13 +11,13 @@ Run the Makefile by calling `make`, followed by `make ask`. Respond with whether
 2. When the program prints out a message, respond with whether or not you would like relationship advice and if you'd like a serious response. Then, input your question and hit enter.
 #### Java
 1.  Run "java Markov" after compiling. Input a -h flag to see the help message, which is also outputted here for your convenience:
-
+```
     Usage: Markov ...
     (optional) \[-w or -weight\] \[read_mode or DOUBLE_NUMBER\]
     (required) \[-f or -file\] \[FILE_NAME or DIR_NAME\]
     (recommended) \[-n or -num_words\] \[INTEGER_NUMBER\]
     (do NOT use with -n!) \[-t or -twitter\]
-
+```
 #### Running Tweet Generator Bot
 1. run `python tweet_collector.py`. If you know the Twitter username of a person, run `python tweet-collector.py -u username` instead.
 2. After the tweets has been stored in a file format $username_tweets, feed that file into Markov Chain by running `java Markov -f $username_tweet -t`. `-t` flag will output a Tweet-like message into the console.
